@@ -1,0 +1,113 @@
+<html>
+
+<head>
+    <title>welcome to {{ title }}</title>
+    <link rel="stylesheet" type="text/css" href="http://localhost:8080/css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="myDIV" class="header">
+        <h1>Welcome  .</h1>
+    </div>
+    <a href="/logout"> Logout</a>
+    <ul id="todo-items">
+        {% for item in data %}
+        <li>
+            <br> FirstName : <span class="fn">{{item.firstname}}</span>
+            <br> LastName: <span class="ln">{{item.lastname}}</span>
+            <br> email: <span class="un">{{item.email}}</span>
+            <button class='delete'>Delete</button>
+            <br> <span style="visibility: hidden;" class="uid">{{item.uid}}</span>
+            <button class='edit'>Edit</button>
+        </li>
+        {% endfor %}
+    </ul>
+    <script type="text/javascript">
+    $(document).on("click", '.delete', function() {
+        var text = $(this).closest("li").find('.uid').text();
+        console.log(text);
+        $(this).closest("li").fadeOut(function() {
+            $.ajax({
+                    url: '/delete-data/' + text,
+                    type: 'DELETE'
+                })
+                .done(function(result) {
+                    if (result == 'deleted') {
+                        $(this).remove();
+                        console.log("del");
+                    }
+                })
+                .fail(function() {
+                    console.log("error");
+                })
+                .always(function() {
+                    console.log("complete");
+                });
+        });
+        return false;
+    })
+
+    $(document).on('click', '.edit', function() {
+        var fn = $(this).closest("li").find('.fn').text();
+        var ln = $(this).closest("li").find('.ln').text();
+        var un = $(this).closest("li").find('.un').text();
+        $(this).hide();
+        $(this).parent().append('<button id="save_Task">SaveTask</button>');
+        
+        $(this).parent().append('<input type="text" class="updated_value1" value="' + fn + '">');
+        $(this).parent().append('<input type="text" class="updated_value2" value="' + ln + '">');
+        $(this).parent().append('<input type="text" class="updated_value3" value="' + un + '">');
+        $('#todo-items').focus();
+    });
+
+    $(document).on('click', '#save_Task', function() {
+        var value1 = $(this).closest("li").find('.uid').text();;
+        console.log(value1);
+        var value2 = $(this).parent().find(".updated_value1").val();
+        var value3 = $(this).parent().find(".updated_value2").val();
+        var value4 = $(this).parent().find(".updated_value3").val();
+        updateTask(value1,value2,value3,value4);
+        $(this).parent().find(".updated_value1").remove();
+        $(this).parent().find(".updated_value2").remove();
+        $(this).parent().find(".updated_value3").remove();
+        $(this).parent().find('.fn').text(value2);
+        $(this).parent().find('.ln').text(value3);
+        $(this).parent().find('.un').text(value4);
+        $(this).parent().find("span").show();
+        $(this).prev().show();
+        $(this).remove();
+    });
+
+    function updateTask(value1,value2,value3,value4) {
+       var id = value1;
+       console.log(id);
+       var newfirstname = value2;
+       var newlastname = value3;
+       var newusername = value4;
+       $.ajax({
+                    url: '/update-data/' + id,
+                    method: 'PUT',
+                    data : {
+                        firstname : newfirstname, 
+                        lastname : newlastname,
+                        username : newusername
+                         }
+                })
+                .done(function(result) {
+                    if (result == 'updated') {
+                        console.log("updated");
+                    }
+                })
+                .fail(function(err) {
+                    console.log("error",err);
+                })
+                .always(function() {
+                    console.log("complete");
+                });
+       console.log(id);
+    }
+    </script>
+</body>
+
+</html>

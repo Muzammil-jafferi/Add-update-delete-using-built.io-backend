@@ -1,0 +1,28 @@
+<html>
+
+<head>
+    <title>welcome to {{ title }}</title>
+    <link rel="stylesheet" type="text/css" href="http://localhost:8080/css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="myDIV" class="header">
+        <h1>Login</h1>
+    </div>
+    <form action="login" method="post">
+    Email:
+    <br>
+    <input type="text" name="email">
+    <br>Password:
+    <br>
+    <input type="text" name="pass">
+    <br> 
+    <input type="submit" class="login" name="Submit" id="signbtn">
+    {% if error %}
+        <label>{{error}} </label>
+        {% endif %}
+</form>
+</body>
+
+</html>
